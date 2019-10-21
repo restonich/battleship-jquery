@@ -1,5 +1,5 @@
-let port = 8080;
-let publicPath = "./public"
+var port = 8080;
+var publicPath = "./public"
 
 const express = require("express");
 const app = express();
@@ -9,7 +9,7 @@ const io = require("socket.io")(server);
 
 const game = require("./game");
 
-let waitingPlayer = null;
+var waitingPlayer = null;
 
 io.on("connection", (newPlayer) => {
 	console.log("Someone connected.");
