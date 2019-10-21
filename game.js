@@ -10,11 +10,12 @@ class BattleshipGame
 
 		this.player1.sock.emit("start", 1);
 		this.player2.sock.emit("start", 2);
-	}
 
-	sendToPlayers(sockets, messageType, message) {
-		sockets.forEach( (sock) => {
-			sock.emit(messageType, message);
+		this.player1.sock.on("placed-ships", (ships) => {
+			this.player2.sock.emit("enemy-ships", ships);
+		});
+		this.player2.sock.on("placed-ships", (ships) => {
+			this.player1.sock.emit("enemy-ships", ships);
 		});
 	}
 }

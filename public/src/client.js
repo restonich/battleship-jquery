@@ -90,15 +90,36 @@ $(document).ready( () => {
 
 	function placeShips()
 	{
-		$(".field1").on("click", () => {
-			$(this).css("background-color", "rgb(90,105,124)");
+		$(".field1").on("click", function chooseCell() {
 			var cellId = $(this).attr("id");
-			placedShips.push(cellId);
-			--ships[curId].size;
-			if (ships[curId] === undefined) {
+			var curShip = ships[curId];
 
+			placedShips.push(cellId);
+			$(this).css("background-color", "rgb(90,105,124)");
+			$(this).off("click", chooseCell);
+			--curShip.size;
+			if (curShip.size === 0) {
+				--curShip.amount;
+				if (curShip.amount !== 0) {
+					curShip.size = curSize;
+					updateShipInfo();
+				} else if (++curId === 4) {
+					$(".field1").off("click", chooseCell);
+					$("#ship-info").text("Ожидаем соперника...");
+					sock.emit("placed-ships", placedShips);
+					mainGame();
+				} else {
+					curSize = ships[curId].size;
+					updateShipInfo();
+				}
+			} else {
+				updateShipInfo();
 			}
 		});
+	}
+
+	function mainGame()
+	{
 	}
 });
 
