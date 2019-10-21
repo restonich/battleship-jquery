@@ -14,25 +14,19 @@ let waitingPlayer = null;
 io.on("connection", (newPlayer) => {
 	console.log("Someone connected.");
 
-	newPlayer.emit("message", "Подбираем Вам соперника...");
-
 	if (waitingPlayer) {
 		new game(waitingPlayer, newPlayer);
 		waitingPlayer = null;
 	} else {
 		waitingPlayer = newPlayer;
 	}
-
-	newPlayer.on("message", text => {
-		io.emit("message", text)
-	});
 });
 
 server.on("error", (err) => {
 	console.error("Error occured.", err);
 });
 
-server.listen(8080, () => {
-	console.log("Server started on port 8080.");
+server.listen(port, () => {
+	console.log(`Server started on port ${port}.`);
 });
 

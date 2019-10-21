@@ -1,27 +1,41 @@
-/* This unholy mess of code enables jquery on node.js */
-var jsdom = require('jsdom');
-const { JSDOM } = jsdom;
-const { window } = new JSDOM();
-const { document } = (new JSDOM('')).window;
-global.document = document;
-var $ = jQuery = require('jquery')(window);
+let ships = [
+	{	name: "Эсминец",
+		size: 4,
+		amount: 1 },
+
+	{	name: "Крейсер",
+		size: 3,
+		amount: 2 },
+
+	{	name: "Фрегат",
+		size: 2,
+		amount: 3 },
+
+	{	name: "Лодка",
+		size: 1,
+		amount: 4 }
+];
 
 class BattleshipGame
 {
-	constructor(player1, player2) {
-		this.player1 = player1;
-		this.player2 = player2;
-		this.currentTurn = [null, null];
+	constructor(sock1, sock2) {
+		this.player1 = {
+			sock : sock1
+		};
+		this.player2 = {
+			sock : sock2
+		};
+		this.players = [this.player1, this.player2];
+		this.sockets = [sock1, sock2];
 
-		this.sendToPlayers([player1, player2], "message", "Соперник найден! Начинаем игру.");
+		this.sendToPlayers(this.sockets, "game-start", "");
 	}
 
-	sendToPlayers(players, messageType, message) {
-		$.each(players, (i, player) => {
-			player.emit(messageType, message);
+	sendToPlayers(sockets, messageType, message) {
+		sockets.forEach( (sock) => {
+			sock.emit(messageType, message);
 		});
 	}
 }
-
 module.exports = BattleshipGame;
 

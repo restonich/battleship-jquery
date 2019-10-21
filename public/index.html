@@ -8,23 +8,19 @@
 	</head>
 
 	<body>
-		<div class="rps-wrapper">
-			<ul id="events"></ul>
+		<h1>Морской Бой</h1>
+		
+		<div id="main-screen">
+			<p id="greetings">Добро пожаловать!<br>Ищем достойного соперника...</p>
 
-			<div class="controls">
-				<div class="chat-wrapper">
-					<form id="chat-form">
-						<input id="chat" autocomplete="off" title="chat"/>
-						<button id="say">Say</button>
-					</form>
+			<div id="boards" style="display: none">
+				<div id="board1">
 				</div>
 
-				<div class="button-wrapper">
-					<button id="rock" class="turn">Rock</button>
-					<button id="paper" class="turn">Paper</button>
-					<button id="scissors" class="turn">Scissors</button>
+				<div id="board2">
 				</div>
 			</div>
+
 		</div>
 
 		<script type=text/javascript src="src/client.js"></script>
