@@ -1,45 +1,77 @@
 $(document).ready( () => {
 	const sock = io();
-	sock.on("game-start", startGame);
+	sock.on("start", startGame);
 
-	function startGame()
+	let ships = [
+		{	name: "Эсминец",
+			size: 4,
+			amount: 1 },
+
+		{	name: "Крейсер",
+			size: 3,
+			amount: 2 },
+
+		{	name: "Фрегат",
+			size: 2,
+			amount: 3 },
+
+		{	name: "Лодка",
+			size: 1,
+			amount: 4 }
+	];
+	let currentShip = 0;
+	let placedShips = [];
+	let playerId = 0;
+
+	function startGame(id)
 	{
+		playerId = id;
 		$("#greetings").append("<br>Соперник найден! Начинаем игру.");
-		setTimeout( () => {$("#greetings").remove()} , 1500);
-		drawBoards();
+		setTimeout( prepareGame, 1500);
 	}
 
-	function drawBoards()
+	function prepareGame()
 	{
-		let board1 = $('<div class="board1"></div>');
-		$("#boards").append(board1);
+		$("#greetings").remove();
+		$("#boards").toggle();
+		drawBoard(1);
+		drawBoard(2);
+		placeShips();
+	}
+
+	function drawBoard(boardId)
+	{
 		let grid = $('<div class="grid"></div>');
-		board.append(grid);
-		for (var i = 0; i <= 10; ++i) {
+		$(`#board${boardId}`).append(grid);
+		for (let i = 0; i <= 10; ++i) {
 			let line = $('<div class="line"></div>');
 			grid.append(line);
-			for (var j = 0; j <= 10; ++j) {
-				var cell = $(`<div class="cell" id="${i}.${j}"></div>`);
+			for (let j = 0; j <= 10; ++j) {
+				let cell = $(`<div class="cell" id="${i}.${j}"></div>`);
 				line.append(cell);
-				if ((cell.attr('id').charAt(0) === "0") && (cell.attr('id').charAt(2) === "0")) {
-				  cell.addClass("to-hide");
-				} else if (cell.attr('id').charAt(0) === "-") {
-				  cell.addClass("first-line");
-				} else if (cell.attr('id').charAt(1) === "-") {
-				  cell.addClass("first-column");
+				if ((cell.attr('id') === "0.0")) {
+					cell.addClass("to-hide");
+				} else if (cell.attr('id').charAt(0) === "0") {
+					cell.addClass(`chars${boardId}`);
+				} else if ((cell.attr('id').charAt(2) === "0") || (cell.attr('id') === "10.0")) {
+					cell.addClass(`nums${boardId}`);
 				} else {
-				  cell.addClass("cell-to-click");
+					cell.addClass(`field${boardId}`);
 				}
-		  }
-		  var alphabet = "ABCDEFGHIJ".split("");
-		  $.each($(`.boardGame${classBoardAndGrid} .first-line`), function(index,value) {
-			// $(value).append($(`<span class="textCase">${alphabet[index]}</span>`));
-			$(value).text(alphabet[index]);
-		  });
-		  $.each($(`.boardGame${classBoardAndGrid} .first-column`), function(index,value) {
-			$(value).text(index+1);
-		  });
+			}
+			let chars = "АБВГДЕЖЗИК".split("");
+			$.each($(`.chars${boardId}`), (i, v) => {
+				$(v).text(chars[i]);
+			});
+			$.each($(`.nums${boardId}`), (i,v) => {
+				$(v).text(i + 1);
+			});
 		};
+	}
+
+	function placeShips()
+	{
+		$(".field1")
 	}
 });
 

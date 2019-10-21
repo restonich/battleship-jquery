@@ -1,21 +1,3 @@
-let ships = [
-	{	name: "Эсминец",
-		size: 4,
-		amount: 1 },
-
-	{	name: "Крейсер",
-		size: 3,
-		amount: 2 },
-
-	{	name: "Фрегат",
-		size: 2,
-		amount: 3 },
-
-	{	name: "Лодка",
-		size: 1,
-		amount: 4 }
-];
-
 class BattleshipGame
 {
 	constructor(sock1, sock2) {
@@ -25,10 +7,9 @@ class BattleshipGame
 		this.player2 = {
 			sock : sock2
 		};
-		this.players = [this.player1, this.player2];
-		this.sockets = [sock1, sock2];
 
-		this.sendToPlayers(this.sockets, "game-start", "");
+		this.player1.sock.emit("start", 1);
+		this.player2.sock.emit("start", 2);
 	}
 
 	sendToPlayers(sockets, messageType, message) {
