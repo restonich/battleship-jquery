@@ -20,15 +20,15 @@ $(document).ready( () => {
 
 			{	name: "Крейсер",
 				size: 3,
-				amount: 1 },
+				amount: 2 },
 
 			{	name: "Фрегат",
 				size: 2,
-				amount: 1 },
+				amount: 3 },
 
 			{	name: "Лодка",
 				size: 1,
-				amount: 1 }
+				amount: 4 }
 		];
 		curId = 0;
 		curSize = ships[0].size;
@@ -151,7 +151,7 @@ $(document).ready( () => {
 				let index = enemyShips.indexOf($(this).attr("id"));
 				enemyShips.splice(index, 1);
 				if (enemyShips.length <= 0) {
-					$("#ship-info").text("Вы победили!<br>Перезагрузите страницу, чтобы начать новую игру.");
+					$("#ship-info").text("Вы победили! Перезагрузите страницу, чтобы начать новую игру.");
 					$(".field2").off("click", hitCell);
 					sock.emit("lose");
 				}
@@ -175,7 +175,7 @@ $(document).ready( () => {
 
 	function processLose()
 	{
-		$("#ship-info").text("Вы проиграли!<br>Перезагрузите страницу, чтобы начать новую игру.");
+		$("#ship-info").text("Вы проиграли! Перезагрузите страницу, чтобы начать новую игру.");
 		$(".field2").off("click", hitCell);
 	}
 });

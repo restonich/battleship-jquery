@@ -5,6 +5,7 @@ html {
 body {
   width: 100%;
   background-image: url("../back2.jpg");
+	  background-size: cover;
 }
 			.grid {
 				height: 500px;
