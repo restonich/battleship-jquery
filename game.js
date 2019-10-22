@@ -17,6 +17,7 @@ class BattleshipGame
 			} else {
 				this.player1.sock.emit("enemy-ships", this.player2.ships);
 				this.player2.sock.emit("enemy-ships", ships);
+				this.player1.sock.emit("your-turn");
 			}
 		});
 
@@ -26,7 +27,29 @@ class BattleshipGame
 			} else {
 				this.player2.sock.emit("enemy-ships", this.player1.ships);
 				this.player1.sock.emit("enemy-ships", ships);
+				this.player1.sock.emit("your-turn");
 			}
+		});
+
+		this.player1.sock.on("your-turn", () => {
+			this.player2.sock.emit("your-turn");
+		});
+		this.player2.sock.on("your-turn", () => {
+			this.player1.sock.emit("your-turn");
+		});
+
+		this.player1.sock.on("hit", (id) => {
+			this.player2.sock.emit("hit", id);
+		});
+		this.player2.sock.on("hit", (id) => {
+			this.player1.sock.emit("hit", id);
+		});
+
+		this.player1.sock.on("lose", () => {
+			this.player2.sock.emit("lose");
+		});
+		this.player2.sock.on("lose", () => {
+			this.player1.sock.emit("lose");
 		});
 	}
 }

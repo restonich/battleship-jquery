@@ -129,38 +129,54 @@ $(document).ready( () => {
 				console.log(cellId);
 				$(`#${cellId}.field2`).css("background-color", "rgb(90,105,124)");
 			}); */
-			$("#ship-info").text("");
+			$("#ship-info").text("Ход соперника");
 			enemyShips = s;
 		});
 		sock.on("your-turn", startTurn);
-		sock.on("hit", processHit(id));
-		sock.on("win", processWin);
+		sock.on("hit", processHit);
 		sock.on("lose", processLose);
 	}
 
-	function startTurn () {
-		$(".field2:not(.clicked)").on("click", function hitCell(){
+	function startTurn()
+	{
+		$("#ship-info").text("Ваш ход");
+
+		$(".field2:not(.clicked)").on("click", function hitCell() {
 			$(this).addClass("clicked");
 			$(this).off("click", hitCell);
+			sock.emit("hit", $(this).attr("id"));
+
 			if (enemyShips.includes($(this).attr("id"))) {
 				$(this).css("background-color", "rgb(124,10,10)");
-				let index = array.indexOf($(this).attr("id"));
+				let index = enemyShips.indexOf($(this).attr("id"));
 				enemyShips.splice(index, 1);
 				if (enemyShips.length <= 0) {
-					$("#ship-info").text("Ты победил!!!!!");
-					break;
+					$("#ship-info").text("Вы победили!<br>Перезагрузите страницу, чтобы начать новую игру.");
+					$(".field2").off("click", hitCell);
+					sock.emit("lose");
 				}
 			} else {
 				$(this).css("background-color", "rgb(10,10,124)");
-				sock.emit("finish-turn");
-				curPlayerId = !playerId;
+				sock.emit("your-turn");
+				$("#ship-info").text("Ход соперника");
+				$(".field2").off("click", hitCell);
 			}
 		});
+	}
 
+	function processHit(id)
+	{
+		if (placedShips.includes(id)) {
+			$(`#${id}.field1`).css("background-color", "rgb(124,10,10)");
 		} else {
-			$("#ship-info").text("Ход соперника");
-			$(".field2").off("click", hitCell);
+			$(`#${id}.field1`).css("background-color", "rgb(10,10,124)");
 		}
+	}
+
+	function processLose()
+	{
+		$("#ship-info").text("Вы проиграли!<br>Перезагрузите страницу, чтобы начать новую игру.");
+		$(".field2").off("click", hitCell);
 	}
 });
 
