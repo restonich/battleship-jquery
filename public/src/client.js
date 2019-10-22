@@ -7,6 +7,8 @@ $(document).ready( () => {
 	var curId;
 	var curSize;
 	var placedShips;
+	var enemyShips;
+	var curPlayerId;
 
 	function init(id)
 	{
@@ -18,19 +20,21 @@ $(document).ready( () => {
 
 			{	name: "Крейсер",
 				size: 3,
-				amount: 2 },
+				amount: 1 },
 
 			{	name: "Фрегат",
 				size: 2,
-				amount: 3 },
+				amount: 1 },
 
 			{	name: "Лодка",
 				size: 1,
-				amount: 4 }
+				amount: 1 }
 		];
 		curId = 0;
 		curSize = ships[0].size;
 		placedShips = [];
+		enemyShips = [];
+		curPlayerId = 1;
 
 		startGame();
 	}
@@ -60,13 +64,13 @@ $(document).ready( () => {
 			var line = $('<div class="line"></div>');
 			grid.append(line);
 			for (var j = 0; j <= 10; ++j) {
-				var cell = $(`<div class="cell" id="${i}.${j}"></div>`);
+				var cell = $(`<div class="cell" id="${i}_${j}"></div>`);
 				line.append(cell);
-				if ((cell.attr('id') === "0.0")) {
+				if ((cell.attr('id') === "0_0")) {
 					cell.addClass("to-hide");
 				} else if (cell.attr('id').charAt(0) === "0") {
 					cell.addClass(`chars${boardId}`);
-				} else if ((cell.attr('id').charAt(2) === "0") || (cell.attr('id') === "10.0")) {
+				} else if ((cell.attr('id').charAt(2) === "0") || (cell.attr('id') === "10_0")) {
 					cell.addClass(`nums${boardId}`);
 				} else {
 					cell.addClass(`field${boardId}`);
@@ -106,8 +110,7 @@ $(document).ready( () => {
 				} else if (++curId === 4) {
 					$(".field1").off("click", chooseCell);
 					$("#ship-info").text("Ожидаем соперника...");
-					sock.emit("placed-ships", placedShips);
-					mainGame();
+					synchronize();
 				} else {
 					curSize = ships[curId].size;
 					updateShipInfo();
@@ -118,8 +121,46 @@ $(document).ready( () => {
 		});
 	}
 
-	function mainGame()
+	function synchronize()
 	{
+		sock.emit("placed-ships", placedShips);
+		sock.on("enemy-ships", function receiveShips(s) {
+		/*	enemyShips.forEach((cellId) => {
+				console.log(cellId);
+				$(`#${cellId}.field2`).css("background-color", "rgb(90,105,124)");
+			}); */
+			$("#ship-info").text("");
+			enemyShips = s;
+		});
+		sock.on("your-turn", startTurn);
+		sock.on("hit", processHit(id));
+		sock.on("win", processWin);
+		sock.on("lose", processLose);
+	}
+
+	function startTurn () {
+		$(".field2:not(.clicked)").on("click", function hitCell(){
+			$(this).addClass("clicked");
+			$(this).off("click", hitCell);
+			if (enemyShips.includes($(this).attr("id"))) {
+				$(this).css("background-color", "rgb(124,10,10)");
+				let index = array.indexOf($(this).attr("id"));
+				enemyShips.splice(index, 1);
+				if (enemyShips.length <= 0) {
+					$("#ship-info").text("Ты победил!!!!!");
+					break;
+				}
+			} else {
+				$(this).css("background-color", "rgb(10,10,124)");
+				sock.emit("finish-turn");
+				curPlayerId = !playerId;
+			}
+		});
+
+		} else {
+			$("#ship-info").text("Ход соперника");
+			$(".field2").off("click", hitCell);
+		}
 	}
 });
 
